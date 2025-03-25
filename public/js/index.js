@@ -12,20 +12,6 @@ const bigScoreEl = document.querySelector("#bigScoreEl");
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
-const projectile = new Projectile(
-  canvas.width / 2,
-  canvas.height / 2,
-  5,
-  "red",
-  { x: 1, y: 1 }
-);
-const projectile2 = new Projectile(
-  canvas.width / 2,
-  canvas.height / 2,
-  5,
-  "green",
-  { x: -1, y: -1 }
-);
 
 let player = new Player(x, y, 15, "white");
 let projectiles = [];
@@ -135,7 +121,7 @@ function animate() {
           );
         }
         if (enemy.radius - 10 > 10) {
-          //increase our score
+          //increases score
           score += 100;
           scoreEl.innerHTML = score;
 
