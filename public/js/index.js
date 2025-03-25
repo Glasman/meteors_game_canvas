@@ -13,7 +13,9 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 
-let player = new Player(x, y, 15, "white");
+socket.on('updatePlayers', (players) => {
+  console.log(players)
+})
 let projectiles = [];
 
 let particles = [];
