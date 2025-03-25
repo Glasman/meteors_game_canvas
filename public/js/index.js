@@ -5,42 +5,57 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 const scoreEl = document.querySelector("#scoreEl");
-const startGameBtn = document.querySelector("#startGameBtn");
-const modalEl = document.querySelector("#modalEl");
-const bigScoreEl = document.querySelector("#bigScoreEl");
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
+const players = {};
 
-socket.on('updatePlayers', (players) => {
-  console.log(players)
-})
-let projectiles = [];
+socket.on("updatePlayers", (backendPlayers) => {
+  //loops through the backendPlayers object
+  for (const id in backendPlayers) {
+    const backendPlayer = backendPlayers[id];
 
-let particles = [];
+    //if player does not exist, they get added to the players obejct
+    if (!players[id]) {
+      players[id] = new Player(backendPlayer.x, backendPlayer.y, 15, "white");
+    }
+  }
 
-function init() {
-  player = new Player(x, y, 15, "white");
-  projectiles = [];
   
-  particles = [];
-  score = 0;
-  scoreEl.innerHTML = score;
-  bigScoreEl.innerHTML = score;
-}
+  //if an id no longer exists on the backend, 
+  //the associated  player is removed from the frontend
+  for (const id in players) {
+    if (!backendPlayers[id]) {
+      delete players[id]
+    }
+  }
+});
+ 
+
+
+socket.emit("requestPlayers");
+
+
+const projectiles = [];
+const particles = [];
+let score = 0;
+scoreEl.innerHTML = score;
 
 let projectileSpeedFactor = 4.5;
 
-
-
 let animationId;
-let score = 0;
+
 function animate() {
   animationId = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,0.08)";
   c.fillRect(0, 0, canvas.width, canvas.height);
-  player.draw();
+//loops through every player in the player object and calls the draw method
+  for (const id in players) {
+    const player = players[id];
+    player.draw();
+  }
+
   particles.forEach((particle, index) => {
     if (particle.alpha <= 0) {
       particles.splice(index, 1);
@@ -63,25 +78,6 @@ function animate() {
       }, 0);
     }
   });
-
-
 }
 
-startGameBtn.addEventListener("click", () => {
-
-  projectileSpeedFactor = 4.5; // Double projectile speed for Easy Mode
-  init();
-  animate();
- 
-  modalEl.style.display = "none";
-});
-
-// Event listener for Easy Mode button
-document.getElementById("easyModeBtn").addEventListener("click", () => {
-
-  projectileSpeedFactor = 6.5; // Increases projectile speed for Easy Mode
-  init();
-  animate();
- 
-  modalEl.style.display = "none";
-});
+animate();

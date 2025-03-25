@@ -1,33 +1,44 @@
-const express = require('express')
-const app = express()
-const { createServer } = require('node:http');
-const server = createServer(app)
-const { Server } = require('socket.io');
-const io = new Server(server);
+const express = require("express");
+const app = express();
+const { createServer } = require("node:http");
+const server = createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 
-
-const port = process.env.PORT || 3000
-const path = require('path')
+const port = process.env.PORT || 3000;
+const path = require("path");
 
 // app.use(express.static('public'))
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, "public")));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'))
-})
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
-const players = {}
+const players = {};
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
+io.on("connect", (socket) => {
   players[socket.id] = {
-    x:100,
-    y:100
-  }
-  io.emit('updatePlayers', players)
-  console.log(players)
+    x: 500 * Math.random(),
+    y: 500 * Math.random(),
+  };
+
+  io.emit("updatePlayers", players);
+  
+  //I think I'll socket.emit is better here but I'm not sure
+  // socket.on("requestPlayers", () => {
+    //   socket.emit("updatePlayers", players);
+    // });
+    socket.on("requestPlayers", () => {
+      io.emit("updatePlayers", players);
+    });
+    
+    socket.on('disconnect', () => {
+      delete players[socket.id]
+      io.emit("updatePlayers", players);
+  });
 });
 
 server.listen(port, () => {
-  console.log(`App listening on port ${port}`)
-})
+  console.log(`App listening on port ${port}`);
+});
