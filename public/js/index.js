@@ -18,24 +18,25 @@ socket.on("updatePlayers", (backendPlayers) => {
 
     //if player does not exist, they get added to the players obejct
     if (!players[id]) {
-      players[id] = new Player(backendPlayer.x, backendPlayer.y, 15, "white");
+      players[id] = new Player({
+        x: backendPlayer.x,
+        y: backendPlayer.y,
+        radius: 15,
+        color: "hsl(0, 100%, 50%)",
+      });
     }
   }
 
-  
-  //if an id no longer exists on the backend, 
+  //if an id no longer exists on the backend,
   //the associated  player is removed from the frontend
   for (const id in players) {
     if (!backendPlayers[id]) {
-      delete players[id]
+      delete players[id];
     }
   }
 });
- 
-
 
 socket.emit("requestPlayers");
-
 
 const projectiles = [];
 const particles = [];
@@ -50,7 +51,7 @@ function animate() {
   animationId = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,0.08)";
   c.fillRect(0, 0, canvas.width, canvas.height);
-//loops through every player in the player object and calls the draw method
+  //loops through every player in the player object and calls the draw method
   for (const id in players) {
     const player = players[id];
     player.draw();
