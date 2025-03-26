@@ -9,18 +9,18 @@ const scoreEl = document.querySelector("#scoreEl");
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
-const players = {};
+const frontEndPlayers = {};
 
-socket.on("updatePlayers", (backendPlayers) => {
-  //loops through the backendPlayers object
-  for (const id in backendPlayers) {
-    const backendPlayer = backendPlayers[id];
+socket.on("updatePlayers", (backEndPlayers) => {
+  //loops through the backEndPlayers object
+  for (const id in backEndPlayers) {
+    const backEndPlayer = backEndPlayers[id];
 
-    //if player does not exist, they get added to the players obejct
-    if (!players[id]) {
-      players[id] = new Player({
-        x: backendPlayer.x,
-        y: backendPlayer.y,
+    //if player does not exist, they get added to the frontEndPlayers obejct
+    if (!frontEndPlayers[id]) {
+      frontEndPlayers[id] = new Player({
+        x: backEndPlayer.x,
+        y: backEndPlayer.y,
         radius: 15,
         color: "hsl(0, 100%, 50%)",
       });
@@ -29,9 +29,9 @@ socket.on("updatePlayers", (backendPlayers) => {
 
   //if an id no longer exists on the backend,
   //the associated  player is removed from the frontend
-  for (const id in players) {
-    if (!backendPlayers[id]) {
-      delete players[id];
+  for (const id in frontEndPlayers) {
+    if (!backEndPlayers[id]) {
+      delete frontEndPlayers[id];
     }
   }
 });
@@ -52,8 +52,8 @@ function animate() {
   c.fillStyle = "rgba(0,0,0,0.08)";
   c.fillRect(0, 0, canvas.width, canvas.height);
   //loops through every player in the player object and calls the draw method
-  for (const id in players) {
-    const player = players[id];
+  for (const id in frontEndPlayers) {
+    const player = frontEndPlayers[id];
     player.draw();
   }
 
