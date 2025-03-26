@@ -15,27 +15,28 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-const players = {};
+const backEndPlayers = {};
 
 io.on("connect", (socket) => {
-  players[socket.id] = {
+  backEndPlayers[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
+    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
   };
 
-  io.emit("updatePlayers", players);
-  
+  io.emit("updatePlayers", backEndPlayers);
+
   //I think I'll socket.emit is better here but I'm not sure
   // socket.on("requestPlayers", () => {
-    //   socket.emit("updatePlayers", players);
-    // });
-    socket.on("requestPlayers", () => {
-      io.emit("updatePlayers", players);
-    });
-    
-    socket.on('disconnect', () => {
-      delete players[socket.id]
-      io.emit("updatePlayers", players);
+  //   socket.emit("updatePlayers", backEndPlayers);
+  // });
+  socket.on("requestPlayers", () => {
+    io.emit("updatePlayers", backEndPlayers);
+  });
+
+  socket.on("disconnect", () => {
+    delete backEndPlayers[socket.id];
+    io.emit("updatePlayers", backEndPlayers);
   });
 });
 
