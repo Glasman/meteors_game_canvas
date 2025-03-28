@@ -26,23 +26,37 @@ io.on("connect", (socket) => {
 
   io.emit("updatePlayers", backEndPlayers);
 
-  //I think socket.emit is better here but I'm not sure
-  // socket.on("requestPlayers", () => {
-  //   socket.emit("updatePlayers", backEndPlayers);
-  // });
-  socket.on("requestPlayers", () => {
-    io.emit("updatePlayers", backEndPlayers);
-  });
 
-  socket.on('keydown', (key) => {
-    
-  })
+  socket.on("keydown", (key) => {
+    switch (key) {
+      case "w":
+        backEndPlayers[socket.id].y -= 5;
+        break;
+      case "a":
+        backEndPlayers[socket.id].x -= 5;
+        break;
+      case "s":
+        backEndPlayers[socket.id].y += 5;
+        break;
+      case "d":
+        backEndPlayers[socket.id].x += 5;
+        break;
+    }
+  });
 
   socket.on("disconnect", () => {
     delete backEndPlayers[socket.id];
     io.emit("updatePlayers", backEndPlayers);
   });
 });
+
+//placed outside io.on("connect") because otherwise each new player would have
+//their own unique setInterval(), this way gives us just one interval ticker
+//for the whole page
+setInterval(() => {
+  io.emit("updatePlayers", backEndPlayers);
+}, 15);
+//the 15 ms update rate allows for approximately 60 tics per second
 
 server.listen(port, () => {
   console.log(`App listening on port ${port}`);

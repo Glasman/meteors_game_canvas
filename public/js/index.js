@@ -26,6 +26,10 @@ socket.on("updatePlayers", (backEndPlayers) => {
         radius: 15,
         color: backEndPlayer.color,
       });
+    } else {
+      //if a player does exist
+      frontEndPlayers[id].x = backEndPlayer.x
+      frontEndPlayers[id].y = backEndPlayer.y
     }
   }
 
@@ -37,8 +41,6 @@ socket.on("updatePlayers", (backEndPlayers) => {
     }
   }
 });
-
-socket.emit("requestPlayers");
 
 const projectiles = [];
 const particles = [];
@@ -85,3 +87,23 @@ function animate() {
 
 animate();
 
+window.addEventListener("keydown", (e) => {
+  //in the event that player starts providing input before the page fully loads,
+  //this prevents errors
+  if (!frontEndPlayers[socket.id]) return;
+
+  switch (e.key) {
+    case "w":
+      socket.emit("keydown", "w");
+      break;
+    case "a":
+      socket.emit("keydown", "a");
+      break;
+    case "s": 
+      socket.emit("keydown", "s");
+      break;
+    case "d":
+      socket.emit("keydown", "d");
+      break;
+  }
+});
