@@ -26,13 +26,17 @@ io.on("connect", (socket) => {
 
   io.emit("updatePlayers", backEndPlayers);
 
-  //I think I'll socket.emit is better here but I'm not sure
+  //I think socket.emit is better here but I'm not sure
   // socket.on("requestPlayers", () => {
   //   socket.emit("updatePlayers", backEndPlayers);
   // });
   socket.on("requestPlayers", () => {
     io.emit("updatePlayers", backEndPlayers);
   });
+
+  socket.on('keydown', (key) => {
+    
+  })
 
   socket.on("disconnect", () => {
     delete backEndPlayers[socket.id];

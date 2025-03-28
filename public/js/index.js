@@ -1,7 +1,7 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
-const devicePixelRatio = window.devicePixelRatio || 1
+const devicePixelRatio = window.devicePixelRatio || 1;
 
 canvas.width = innerWidth * devicePixelRatio;
 canvas.height = innerHeight * devicePixelRatio;
@@ -84,3 +84,4 @@ function animate() {
 }
 
 animate();
+
