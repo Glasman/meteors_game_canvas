@@ -28,8 +28,8 @@ socket.on("updatePlayers", (backEndPlayers) => {
       });
     } else {
       //if a player does exist
-      frontEndPlayers[id].x = backEndPlayer.x
-      frontEndPlayers[id].y = backEndPlayer.y
+      frontEndPlayers[id].x = backEndPlayer.x;
+      frontEndPlayers[id].y = backEndPlayer.y;
     }
   }
 
@@ -87,6 +87,41 @@ function animate() {
 
 animate();
 
+const keys = {
+  w: {
+    pressed: false,
+  },
+  a: {
+    pressed: false,
+  },
+  s: {
+    pressed: false,
+  },
+  d: {
+    pressed: false,
+  },
+};
+
+const SPEED = 10;
+setInterval(() => {
+  if (keys.w.pressed) {
+    frontEndPlayers[socket.id].y -= SPEED;
+    socket.emit("keydown", "w");
+  }
+  if (keys.a.pressed) {
+    frontEndPlayers[socket.id].x -= SPEED;
+    socket.emit("keydown", "a");
+  }
+  if (keys.s.pressed) {
+    frontEndPlayers[socket.id].y += SPEED;
+    socket.emit("keydown", "s");
+  }
+  if (keys.d.pressed) {
+    frontEndPlayers[socket.id].x += SPEED;
+    socket.emit("keydown", "d");
+  }
+}, 15);
+
 window.addEventListener("keydown", (e) => {
   //in the event that player starts providing input before the page fully loads,
   //this prevents errors
@@ -94,16 +129,36 @@ window.addEventListener("keydown", (e) => {
 
   switch (e.key) {
     case "w":
-      socket.emit("keydown", "w");
+      keys.w.pressed = true;
       break;
     case "a":
-      socket.emit("keydown", "a");
+      keys.a.pressed = true;
       break;
-    case "s": 
-      socket.emit("keydown", "s");
+    case "s":
+      keys.s.pressed = true;
       break;
     case "d":
-      socket.emit("keydown", "d");
+      keys.d.pressed = true;
+      break;
+  }
+});
+window.addEventListener("keyup", (e) => {
+  //in the event that player starts providing input before the page fully loads,
+  //this prevents errors
+  if (!frontEndPlayers[socket.id]) return;
+
+  switch (e.key) {
+    case "w":
+      keys.w.pressed = false;
+      break;
+    case "a":
+      keys.a.pressed = false;
+      break;
+    case "s":
+      keys.s.pressed = false;
+      break;
+    case "d":
+      keys.d.pressed = false;
       break;
   }
 });

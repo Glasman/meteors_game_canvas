@@ -26,20 +26,20 @@ io.on("connect", (socket) => {
 
   io.emit("updatePlayers", backEndPlayers);
 
-
+ const SPEED = 10;
   socket.on("keydown", (key) => {
     switch (key) {
       case "w":
-        backEndPlayers[socket.id].y -= 5;
+        backEndPlayers[socket.id].y -= SPEED;
         break;
       case "a":
-        backEndPlayers[socket.id].x -= 5;
+        backEndPlayers[socket.id].x -= SPEED;
         break;
       case "s":
-        backEndPlayers[socket.id].y += 5;
+        backEndPlayers[socket.id].y += SPEED;
         break;
       case "d":
-        backEndPlayers[socket.id].x += 5;
+        backEndPlayers[socket.id].x += SPEED;
         break;
     }
   });
