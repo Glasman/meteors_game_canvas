@@ -22,12 +22,14 @@ io.on("connect", (socket) => {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
     color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+    sequenceNumber: 0,
   };
 
   io.emit("updatePlayers", backEndPlayers);
 
- const SPEED = 10;
-  socket.on("keydown", (key) => {
+  const SPEED = 10;
+  socket.on("keydown", ({ key, sequenceNumber }) => {
+    backEndPlayers[socket.id].sequenceNumber = sequenceNumber
     switch (key) {
       case "w":
         backEndPlayers[socket.id].y -= SPEED;

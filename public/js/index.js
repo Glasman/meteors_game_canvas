@@ -27,9 +27,46 @@ socket.on("updatePlayers", (backEndPlayers) => {
         color: backEndPlayer.color,
       });
     } else {
-      //if a player does exist
-      frontEndPlayers[id].x = backEndPlayer.x;
-      frontEndPlayers[id].y = backEndPlayer.y;
+      //player movement and server reconcilation in if statement
+      //only applies changes to screen of individual client
+      if (id === socket.id) {
+        //if a player does exist
+
+        //movrd character to most recently updated location according to the server
+        frontEndPlayers[id].x = backEndPlayer.x;
+        frontEndPlayers[id].y = backEndPlayer.y;
+
+        //finds the sequenceNumber of the most recent input tracked by the server 
+        //and kicked to the front end
+        const lastBackendInputIndex = playerInputs.findIndex((input) => {
+          return backEndPlayer.sequenceNumber === input.sequenceNumber;
+        });
+        //if lastBackEndInputIndex exists
+        if (lastBackendInputIndex > -1)
+          //remove all inputs that have been completed by the server
+          playerInputs.splice(0, lastBackendInputIndex + 1);
+
+          //server side reconciliation moves player to where they should be according to 
+          //client sides input that have not yet been processed by the server 
+          //and can smooth out rubberbanding when dealing with high ping
+        playerInputs.forEach((input) => {
+          frontEndPlayers[id].x += input.vx;
+          frontEndPlayers[id].y += input.vy;
+        });
+      } else {
+        //applies server controlled movement to all other players in game,
+        //not just the individual client
+
+        //interpolates enemy in instances of lag
+        //in instances of disconnect between frontend and backend enemy locations
+        //this provides a smooth animation instead of snapping them around
+        gsap.to(frontEndPlayers[id], {
+          x: backEndPlayer.x,
+          y: backEndPlayer.y,
+          duration: 0.015,
+          ease: "linear",
+        });
+      }
     }
   }
 
@@ -103,23 +140,34 @@ const keys = {
 };
 
 const SPEED = 10;
+const playerInputs = [];
+let sequenceNumber = 0;
 setInterval(() => {
   if (keys.w.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, vx: 0, vy: -SPEED });
     frontEndPlayers[socket.id].y -= SPEED;
-    socket.emit("keydown", "w");
+    socket.emit("keydown", { key: "w", sequenceNumber });
   }
   if (keys.a.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, vx: -SPEED, vy: 0 });
     frontEndPlayers[socket.id].x -= SPEED;
-    socket.emit("keydown", "a");
+    socket.emit("keydown", { key: "a", sequenceNumber });
   }
   if (keys.s.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, vx: 0, vy: SPEED });
     frontEndPlayers[socket.id].y += SPEED;
-    socket.emit("keydown", "s");
+    socket.emit("keydown", { key: "s", sequenceNumber });
   }
   if (keys.d.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, vx: SPEED, vy: 0 });
     frontEndPlayers[socket.id].x += SPEED;
-    socket.emit("keydown", "d");
+    socket.emit("keydown", { key: "d", sequenceNumber });
   }
+  console.log(sequenceNumber);
 }, 15);
 
 window.addEventListener("keydown", (e) => {
