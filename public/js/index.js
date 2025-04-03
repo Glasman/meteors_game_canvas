@@ -12,6 +12,7 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 const frontEndPlayers = {};
+const frontEndProjectiles = []
 
 socket.on("updatePlayers", (backEndPlayers) => {
   //loops through the backEndPlayers object
