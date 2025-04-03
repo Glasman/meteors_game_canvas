@@ -8,11 +8,13 @@ canvas.height = innerHeight * devicePixelRatio;
 
 const scoreEl = document.querySelector("#scoreEl");
 
+const playerInputs = [];
+
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 const frontEndPlayers = {};
-const frontEndProjectiles = []
+const frontEndProjectiles = [];
 
 socket.on("updatePlayers", (backEndPlayers) => {
   //loops through the backEndPlayers object
@@ -37,7 +39,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
         frontEndPlayers[id].x = backEndPlayer.x;
         frontEndPlayers[id].y = backEndPlayer.y;
 
-        //finds the sequenceNumber of the most recent input tracked by the server 
+        //finds the sequenceNumber of the most recent input tracked by the server
         //and kicked to the front end
         const lastBackendInputIndex = playerInputs.findIndex((input) => {
           return backEndPlayer.sequenceNumber === input.sequenceNumber;
@@ -47,9 +49,9 @@ socket.on("updatePlayers", (backEndPlayers) => {
           //remove all inputs that have been completed by the server
           playerInputs.splice(0, lastBackendInputIndex + 1);
 
-          //server side reconciliation moves player to where they should be according to 
-          //client sides input that have not yet been processed by the server 
-          //and can smooth out rubberbanding when dealing with high ping
+        //server side reconciliation moves player to where they should be according to
+        //client sides input that have not yet been processed by the server
+        //and can smooth out rubberbanding when dealing with high ping
         playerInputs.forEach((input) => {
           frontEndPlayers[id].x += input.vx;
           frontEndPlayers[id].y += input.vy;
@@ -80,7 +82,6 @@ socket.on("updatePlayers", (backEndPlayers) => {
   }
 });
 
-const projectiles = [];
 const particles = [];
 let score = 0;
 scoreEl.innerHTML = score;
@@ -99,28 +100,12 @@ function animate() {
     player.draw();
   }
 
-  particles.forEach((particle, index) => {
-    if (particle.alpha <= 0) {
-      particles.splice(index, 1);
-    } else {
-      particle.update();
+  for (let i = frontEndProjectiles.length - 1; i >= 0; i--) {
+    const frontEndProjectile = frontEndProjectiles[i];
+    if (frontEndProjectile) {
+      frontEndProjectile.update();
     }
-  });
-  projectiles.forEach((projectile, projectileIndex) => {
-    projectile.update();
-
-    //remove from edges of screen
-    if (
-      projectile.x + projectile.radius < 0 ||
-      projectile.x - projectile.radius > canvas.width ||
-      projectile.y + projectile.radius < 0 ||
-      projectile.y - projectile.radius > canvas.height
-    ) {
-      setTimeout(() => {
-        projectiles.splice(projectileIndex, 1);
-      }, 0);
-    }
-  });
+  }
 }
 
 animate();
@@ -141,7 +126,6 @@ const keys = {
 };
 
 const SPEED = 10;
-const playerInputs = [];
 let sequenceNumber = 0;
 setInterval(() => {
   if (keys.w.pressed) {
@@ -168,7 +152,6 @@ setInterval(() => {
     frontEndPlayers[socket.id].x += SPEED;
     socket.emit("keydown", { key: "d", sequenceNumber });
   }
-  console.log(sequenceNumber);
 }, 15);
 
 window.addEventListener("keydown", (e) => {

@@ -8,7 +8,7 @@ addEventListener("click", (event) => {
     x: Math.cos(angle) * projectileSpeedFactor,
     y: Math.sin(angle) * projectileSpeedFactor,
   };
-  projectiles.push(
+  frontEndProjectiles.push(
     new Projectile({
       x: canvas.width / 2,
       y: canvas.height / 2,
@@ -17,5 +17,5 @@ addEventListener("click", (event) => {
       velocity,
     })
   );
-  console.log(projectiles)
+  console.log(frontEndProjectiles)
 });
