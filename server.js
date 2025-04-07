@@ -69,7 +69,7 @@ io.on("connect", (socket) => {
 
   socket.on("disconnect", () => {
     delete backEndPlayers[socket.id];
-    io.emit("updatePlayers", backEndPlayers);
+    console.log('A player has disconnected')
   });
 });
 

@@ -9,24 +9,11 @@ addEventListener("click", (event) => {
     event.clientX * window.devicePixelRatio - playerPosition.x
   );
 
-  // const velocity = {
-  //   x: Math.cos(angle) * projectileSpeedFactor,
-  //   y: Math.sin(angle) * projectileSpeedFactor,
-  // };
-
   socket.emit("shoot", {
     x: playerPosition.x,
     y: playerPosition.y,
     angle,
   });
-  // frontEndProjectiles.push(
-  //   new Projectile({
-  //     x: playerPosition.x,
-  //     y: playerPosition.y,
-  //     radius: 5,
-  //     color: "white",
-  //     velocity,
-  //   })
-  // );
+
   console.log(frontEndProjectiles);
 });

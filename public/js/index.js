@@ -8,7 +8,6 @@ canvas.height = innerHeight * devicePixelRatio;
 
 const scoreEl = document.querySelector("#scoreEl");
 
-
 const playerInputs = [];
 
 //I believe these are legacy from when player was in the middle of the screen, to be deleted
@@ -16,7 +15,26 @@ const playerInputs = [];
 // const y = canvas.height / 2;
 
 const frontEndPlayers = {};
-const frontEndProjectiles = [];
+const frontEndProjectiles = {};
+
+socket.on("updateProjectiles", (backEndProjectiles) => {
+  for (const id in backEndProjectiles) {
+    const backEndProjectile = backEndProjectiles[id];
+
+    if (!frontEndProjectiles[id]) {
+      frontEndProjectiles[id] = new Projectile({
+        x: backEndProjectile.x,
+        y: backEndProjectile.y,
+        radius: 10,
+        color: "white",
+        velocity: backEndProjectile.velocity,
+      });
+    } else {
+      frontEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
+      frontEndProjectiles[id].y += backEndProjectiles[id].velocity.y;
+    }
+  }
+});
 
 socket.on("updatePlayers", (backEndPlayers) => {
   //loops through the backEndPlayers object
@@ -37,7 +55,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
       if (id === socket.id) {
         //if a player does exist
 
-        //movrd character to most recently updated location according to the server
+        //moves character to most recently updated location according to the server
         frontEndPlayers[id].x = backEndPlayer.x;
         frontEndPlayers[id].y = backEndPlayer.y;
 
@@ -88,7 +106,6 @@ const particles = [];
 let score = 0;
 scoreEl.innerHTML = score;
 
-
 let animationId;
 
 function animate() {
@@ -97,14 +114,13 @@ function animate() {
   c.fillRect(0, 0, canvas.width, canvas.height);
   //loops through every player in the player object and calls the draw method
   for (const id in frontEndPlayers) {
-    const player = frontEndPlayers[id];
-    player.draw();
+    const frontEndPlayer = frontEndPlayers[id];
+    frontEndPlayer.draw();
   }
-
-  // for (let i = frontEndProjectiles.length - 1; i >= 0; i--) {
-  //   const frontEndProjectile = frontEndProjectiles[i];
-  //   frontEndProjectile?.update();
-  // }
+  for (const id in frontEndProjectiles) {
+    const frontEndProjectile = frontEndProjectiles[id];
+    frontEndProjectile.draw();
+  }
 }
 
 animate();
