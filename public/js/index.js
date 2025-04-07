@@ -26,7 +26,7 @@ socket.on("updateProjectiles", (backEndProjectiles) => {
         x: backEndProjectile.x,
         y: backEndProjectile.y,
         radius: 10,
-        color: "white",
+        color: backEndProjectiles.color,
         velocity: backEndProjectile.velocity,
       });
     } else {
