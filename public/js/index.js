@@ -26,7 +26,11 @@ socket.on("updateProjectiles", (backEndProjectiles) => {
         x: backEndProjectile.x,
         y: backEndProjectile.y,
         radius: 10,
-        color: backEndProjectile.color,
+        //?. required as frontEndProjectiles may not load for other players immediately
+        //leading to projectiles not being rendered on other screens
+        //also, putting backendprojectiles.playerid in brackets gives just
+        //the id number value, letting us use it with frontendplayers
+        color: frontEndPlayers[backEndProjectile.playerId]?.color,
         velocity: backEndProjectile.velocity,
       });
     } else {
