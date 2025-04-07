@@ -8,6 +8,8 @@ const io = new Server(server, { pingInterval: 2000, pingTimeout: 5000 });
 const port = process.env.PORT || 3000;
 const path = require("path");
 
+const SPEED = 10;
+let projectileId = 0;
 // app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -16,8 +18,10 @@ app.get("/", (req, res) => {
 });
 
 const backEndPlayers = {};
+const backEndProjectiles = {};
 
 io.on("connect", (socket) => {
+  console.log('A new player has connected!')
   backEndPlayers[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
@@ -27,9 +31,26 @@ io.on("connect", (socket) => {
 
   io.emit("updatePlayers", backEndPlayers);
 
-  const SPEED = 10;
+  socket.on("shoot", ({ x, y, angle }) => {
+    projectileId++;
+    let projectileSpeedFactor = 4.5;
+
+    const velocity = {
+      x: Math.cos(angle) * projectileSpeedFactor,
+      y: Math.sin(angle) * projectileSpeedFactor,
+    };
+
+    backEndProjectiles[projectileId] = {
+      x,
+      y,
+      velocity,
+      playerId: socket.id,
+    };
+    console.log(backEndProjectiles);
+  });
+
   socket.on("keydown", ({ key, sequenceNumber }) => {
-    backEndPlayers[socket.id].sequenceNumber = sequenceNumber
+    backEndPlayers[socket.id].sequenceNumber = sequenceNumber;
     switch (key) {
       case "w":
         backEndPlayers[socket.id].y -= SPEED;
@@ -52,11 +73,18 @@ io.on("connect", (socket) => {
   });
 });
 
-//placed outside io.on("connect") because otherwise each new player would have
+//backend ticker placed outside io.on("connect") because otherwise each new player would have
 //their own unique setInterval(), this way gives us just one interval ticker
 //for the whole page
 setInterval(() => {
+  //update projectile position
+  for (const id in backEndProjectiles) {
+    backEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
+    backEndProjectiles[id].y += backEndProjectiles[id].velocity.y;
+  }
+
   io.emit("updatePlayers", backEndPlayers);
+  io.emit("updateProjectiles", backEndProjectiles);
 }, 15);
 //the 15 ms update rate allows for approximately 60 tics per second
 

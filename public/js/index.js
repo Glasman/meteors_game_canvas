@@ -8,10 +8,12 @@ canvas.height = innerHeight * devicePixelRatio;
 
 const scoreEl = document.querySelector("#scoreEl");
 
+
 const playerInputs = [];
 
-const x = canvas.width / 2;
-const y = canvas.height / 2;
+//I believe these are legacy from when player was in the middle of the screen, to be deleted
+// const x = canvas.width / 2;
+// const y = canvas.height / 2;
 
 const frontEndPlayers = {};
 const frontEndProjectiles = [];
@@ -86,7 +88,6 @@ const particles = [];
 let score = 0;
 scoreEl.innerHTML = score;
 
-let projectileSpeedFactor = 4.5;
 
 let animationId;
 
@@ -100,10 +101,10 @@ function animate() {
     player.draw();
   }
 
-  for (let i = frontEndProjectiles.length - 1; i >= 0; i--) {
-    const frontEndProjectile = frontEndProjectiles[i];
-    frontEndProjectile?.update();
-  }
+  // for (let i = frontEndProjectiles.length - 1; i >= 0; i--) {
+  //   const frontEndProjectile = frontEndProjectiles[i];
+  //   frontEndProjectile?.update();
+  // }
 }
 
 animate();

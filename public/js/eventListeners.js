@@ -2,25 +2,31 @@ addEventListener("click", (event) => {
 
   const playerPosition = {
     x: frontEndPlayers[socket.id].x,
-    y: frontEndPlayers[socket.id].y
-  }
+    y: frontEndPlayers[socket.id].y,
+  };
   const angle = Math.atan2(
-    (event.clientY * window.devicePixelRatio) - playerPosition.y,
-    (event.clientX * window.devicePixelRatio) - playerPosition.x
+    event.clientY * window.devicePixelRatio - playerPosition.y,
+    event.clientX * window.devicePixelRatio - playerPosition.x
   );
 
-  const velocity = {
-    x: Math.cos(angle) * projectileSpeedFactor,
-    y: Math.sin(angle) * projectileSpeedFactor,
-  };
-  frontEndProjectiles.push(
-    new Projectile({
-      x: playerPosition.x,
-      y: playerPosition.y,
-      radius: 5,
-      color: "white",
-      velocity,
-    })
-  );
-  console.log(frontEndProjectiles)
+  // const velocity = {
+  //   x: Math.cos(angle) * projectileSpeedFactor,
+  //   y: Math.sin(angle) * projectileSpeedFactor,
+  // };
+
+  socket.emit("shoot", {
+    x: playerPosition.x,
+    y: playerPosition.y,
+    angle,
+  });
+  // frontEndProjectiles.push(
+  //   new Projectile({
+  //     x: playerPosition.x,
+  //     y: playerPosition.y,
+  //     radius: 5,
+  //     color: "white",
+  //     velocity,
+  //   })
+  // );
+  console.log(frontEndProjectiles);
 });
