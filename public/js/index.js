@@ -1,6 +1,10 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
+//documentation says to include this in the html
+//but placing it here seems to fix some async issues
+const socket = io.connect(); 
+
 const devicePixelRatio = window.devicePixelRatio || 1;
 
 canvas.width = innerWidth * devicePixelRatio;
@@ -17,6 +21,9 @@ const playerInputs = [];
 const frontEndPlayers = {};
 const frontEndProjectiles = {};
 
+socket.on("connect", () => {
+  console.log("CONNECT")
+})
 socket.on("updateProjectiles", (backEndProjectiles) => {
   for (const id in backEndProjectiles) {
     const backEndProjectile = backEndProjectiles[id];
