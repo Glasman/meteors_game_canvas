@@ -21,7 +21,7 @@ const backEndPlayers = {};
 const backEndProjectiles = {};
 
 io.on("connect", (socket) => {
-  console.log('A new player has connected!')
+  console.log("A new player has connected!");
   backEndPlayers[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
@@ -30,6 +30,13 @@ io.on("connect", (socket) => {
   };
 
   io.emit("updatePlayers", backEndPlayers);
+
+  socket.on("initCanvas", ({ width, height }) => {
+    backEndPlayers[socket.id].canvas = {
+      width,
+      height,
+    };
+  });
 
   socket.on("shoot", ({ x, y, angle }) => {
     projectileId++;
@@ -69,7 +76,7 @@ io.on("connect", (socket) => {
 
   socket.on("disconnect", () => {
     delete backEndPlayers[socket.id];
-    console.log('A player has disconnected')
+    console.log("A player has disconnected");
   });
 });
 
@@ -81,6 +88,13 @@ setInterval(() => {
   for (const id in backEndProjectiles) {
     backEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
     backEndProjectiles[id].y += backEndProjectiles[id].velocity.y;
+
+    const PROJECTILE_RADIUS = 5
+    if (backEndProjectiles[id].x - PROJECTILE_RADIUS >= 
+      backEndPlayers[backEndProjectiles[id].playerId]?.canvas?.width) {
+        delete backEndProjectiles[id]
+    }
+    console.log(backEndProjectiles)
   }
 
   io.emit("updatePlayers", backEndPlayers);
