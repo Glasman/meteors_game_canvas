@@ -119,7 +119,7 @@ setInterval(() => {
           backEndProjectiles[id].y - backEndPlayer.y
         );
 
-        if (          
+        if (
           backEndProjectiles[id].playerId !== playerId &&
           DISTANCE < backEndProjectiles[id].radius + backEndPlayer.radius
         ) {
