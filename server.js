@@ -40,7 +40,7 @@ io.on("connect", (socket) => {
 
   socket.on("shoot", ({ x, y, angle }) => {
     projectileId++;
-    let projectileSpeedFactor = 4.5;
+    let projectileSpeedFactor = 7;
 
     const velocity = {
       x: Math.cos(angle) * projectileSpeedFactor,
