@@ -37,7 +37,8 @@ socket.on("updateProjectiles", (backEndProjectiles) => {
       frontEndProjectiles[id] = new Projectile({
         x: backEndProjectile.x,
         y: backEndProjectile.y,
-        radius: 10,
+        radius: backEndProjectile.radius,
+
         //?. required as frontEndProjectiles may not load for other players immediately
         //leading to projectiles not being rendered on other screens
         //also, putting backendprojectiles.playerid in brackets gives just

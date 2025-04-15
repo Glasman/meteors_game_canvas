@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 const path = require("path");
 
 const SPEED = 10;
-const RADIUS = 10
+const RADIUS = 15;
 let projectileId = 0;
 // app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, "public")));
@@ -37,7 +37,7 @@ io.on("connect", (socket) => {
       width,
       height,
     };
-    backEndPlayers[socket.id].radius = devicePixelRatio * RADIUS
+    backEndPlayers[socket.id].radius = devicePixelRatio * RADIUS;
   });
 
   socket.on("shoot", ({ x, y, angle }) => {
@@ -54,6 +54,7 @@ io.on("connect", (socket) => {
       y,
       velocity,
       playerId: socket.id,
+      radius: 10,
     };
     console.log(backEndProjectiles);
   });
@@ -91,18 +92,43 @@ setInterval(() => {
     backEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
     backEndProjectiles[id].y += backEndProjectiles[id].velocity.y;
 
-    const PROJECTILE_RADIUS = 5;
-    if (
-      backEndProjectiles[id].x - PROJECTILE_RADIUS >=
-        backEndPlayers[backEndProjectiles[id].playerId]?.canvas?.width ||
+    const PROJECTILE_RADIUS = backEndProjectiles[id].radius;
+
+    const playerCanvas =
+      backEndPlayers[backEndProjectiles[id].playerId]?.canvas;
+
+    const isOutOfBounds =
+      backEndProjectiles[id].x - PROJECTILE_RADIUS >= playerCanvas?.width ||
       backEndProjectiles[id].x + PROJECTILE_RADIUS <= 0 ||
-      backEndProjectiles[id].y - PROJECTILE_RADIUS >=
-        backEndPlayers[backEndProjectiles[id].playerId]?.canvas?.height ||
-      backEndProjectiles[id].y + PROJECTILE_RADIUS <= 0
-    ) {
+      backEndProjectiles[id].y - PROJECTILE_RADIUS >= playerCanvas?.height ||
+      backEndProjectiles[id].y + PROJECTILE_RADIUS <= 0;
+
+    if (isOutOfBounds) {
       delete backEndProjectiles[id];
+      continue;
     }
-    console.log(backEndProjectiles);
+
+    for (const playerId in backEndPlayers) {
+      const backEndPlayer = backEndPlayers[playerId];
+
+      //this if loop is necessary because without it the page would crash once a
+      //projectile was supposed to be deleted
+      if (backEndProjectiles[id]) {
+        const DISTANCE = Math.hypot(
+          backEndProjectiles[id].x - backEndPlayer.x,
+          backEndProjectiles[id].y - backEndPlayer.y
+        );
+
+        if (          
+          backEndProjectiles[id].playerId !== playerId &&
+          DISTANCE < backEndProjectiles[id].radius + backEndPlayer.radius
+        ) {
+          delete backEndProjectiles[id];
+          delete backEndPlayers[playerId];
+          break;
+        }
+      }
+    }
   }
 
   io.emit("updatePlayers", backEndPlayers);
