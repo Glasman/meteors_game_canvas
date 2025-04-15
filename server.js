@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 const path = require("path");
 
 const SPEED = 10;
+const RADIUS = 10
 let projectileId = 0;
 // app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, "public")));
@@ -31,11 +32,12 @@ io.on("connect", (socket) => {
 
   io.emit("updatePlayers", backEndPlayers);
 
-  socket.on("initCanvas", ({ width, height }) => {
+  socket.on("initCanvas", ({ width, height, devicePixelRatio }) => {
     backEndPlayers[socket.id].canvas = {
       width,
       height,
     };
+    backEndPlayers[socket.id].radius = devicePixelRatio * RADIUS
   });
 
   socket.on("shoot", ({ x, y, angle }) => {
