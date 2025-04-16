@@ -127,7 +127,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
 
 const particles = [];
 let score = 0;
-scoreEl.innerHTML = score;
+// scoreEl.innerHTML = score;
 
 let animationId;
 
