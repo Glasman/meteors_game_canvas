@@ -72,6 +72,9 @@ socket.on("updatePlayers", (backEndPlayers) => {
         radius: 15,
         color: backEndPlayer.color,
       });
+      document.querySelector(
+        "#playerLabels"
+      ).innerHTML += `<div>${id}: 0</div>`;
     } else {
       //player movement and server reconcilation in if statement
       //only applies changes to screen of individual client
