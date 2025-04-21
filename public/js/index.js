@@ -74,7 +74,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
       });
       document.querySelector(
         "#playerLabels"
-      ).innerHTML += `<div>${id}: 0</div>`;
+      ).innerHTML += `<div data-id="${id}">${id}: 0</div>`;
     } else {
       //player movement and server reconcilation in if statement
       //only applies changes to screen of individual client
@@ -123,6 +123,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
   //the associated  player is removed from the frontend
   for (const id in frontEndPlayers) {
     if (!backEndPlayers[id]) {
+      const divToDelete = document.querySelector('#playerLabels')
       delete frontEndPlayers[id];
     }
   }
