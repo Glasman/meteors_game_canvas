@@ -119,6 +119,8 @@ setInterval(() => {
           backEndProjectiles[id].y - backEndPlayer.y
         );
 
+        //player/projectile collision logic
+        //where players get deleted on hit
         if (
           backEndProjectiles[id].playerId !== playerId &&
           DISTANCE < backEndProjectiles[id].radius + backEndPlayer.radius

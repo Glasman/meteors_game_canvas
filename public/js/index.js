@@ -119,11 +119,13 @@ socket.on("updatePlayers", (backEndPlayers) => {
     }
   }
 
-  //if an id no longer exists on the backend,
-  //the associated  player is removed from the frontend
+  //if player is deleted from backend due to collision or disconnect,
+  //aka if the id no longer exists on the backend
+  //they are removed from both the leaderboard and the field
   for (const id in frontEndPlayers) {
     if (!backEndPlayers[id]) {
-      const divToDelete = document.querySelector('#playerLabels')
+      const divToDelete = document.querySelector(`div[data-id="${id}"]`);
+      divToDelete.remove()
       delete frontEndPlayers[id];
     }
   }
