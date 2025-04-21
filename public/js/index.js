@@ -78,10 +78,12 @@ socket.on("updatePlayers", (backEndPlayers) => {
         //and placed on the scoreboard on connection
       ).innerHTML += `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`;
     } else {
-      //checks to see updated score from backend every frame 
+      //checks to see updated score from backend every frame
       //and places updated score on the board
 
-      document.querySelector(`div[data-id="${id}"]`).innerHTML = `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`
+      document.querySelector(
+        `div[data-id="${id}"]`
+      ).innerHTML = `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`;
 
       //player movement and server reconcilation in if statement
       //only applies changes to screen of individual client
@@ -132,7 +134,7 @@ socket.on("updatePlayers", (backEndPlayers) => {
   for (const id in frontEndPlayers) {
     if (!backEndPlayers[id]) {
       const divToDelete = document.querySelector(`div[data-id="${id}"]`);
-      divToDelete.remove()
+      divToDelete.remove();
       delete frontEndPlayers[id];
     }
   }
