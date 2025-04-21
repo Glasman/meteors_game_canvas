@@ -74,8 +74,15 @@ socket.on("updatePlayers", (backEndPlayers) => {
       });
       document.querySelector(
         "#playerLabels"
-      ).innerHTML += `<div data-id="${id}">${id}: 0</div>`;
+        //player id and score of 0 are taken from the backendplayers object
+        //and placed on the scoreboard on connection
+      ).innerHTML += `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`;
     } else {
+      //checks to see updated score from backend every frame 
+      //and places updated score on the board
+
+      document.querySelector(`div[data-id="${id}"]`).innerHTML = `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`
+
       //player movement and server reconcilation in if statement
       //only applies changes to screen of individual client
       if (id === socket.id) {
