@@ -76,14 +76,37 @@ socket.on("updatePlayers", (backEndPlayers) => {
         "#playerLabels"
         //player id and score of 0 are taken from the backendplayers object
         //and placed on the scoreboard on connection
-      ).innerHTML += `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`;
+      ).innerHTML += `<div data-id="${id}" data-score="${backEndPlayer.score}">${id}: ${backEndPlayer.score}</div>`;
     } else {
       //checks to see updated score from backend every frame
       //and places updated score on the board
-
       document.querySelector(
         `div[data-id="${id}"]`
-      ).innerHTML = `<div data-id="${id}">${id}: ${backEndPlayer.score}</div>`;
+      ).innerHTML = `${id}: ${backEndPlayer.score}`;
+
+      //updates that same div by setting data-score attribute equal to player's current score
+      document
+        .querySelector(`div[data-id="${id}"]`)
+        .setAttribute("data-score", backEndPlayer.score);
+
+      //finds parent container div that holds all player div elements
+      //assume all player entires are direct children in this container
+      const parentDiv = document.querySelector("#playerLabels");
+
+      //selects all immediate div children inside parent container
+      //converts nodelist into proper array using .Array allowing for use of .sort()
+      const childDivs = Array.from(parentDiv.querySelectorAll("div"));
+
+      //sorts each div in descending order based on the data-score attribute
+      childDivs.sort((a, b) => {
+        const scoreA = Number(a.getAttribute("data-score"));
+        const scoreB = Number(b.getAttribute("data-score"));
+        return scoreB - scoreA;
+      });
+
+      //wipes all existing children of #playerLabels,
+      //inserts all of the now sorted divs into #playerLabels
+      parentDiv.replaceChildren(...childDivs);
 
       //player movement and server reconcilation in if statement
       //only applies changes to screen of individual client

@@ -128,7 +128,9 @@ setInterval(() => {
         ) {
           //if a projectile hits a player, the owner of that
           //projectile's score goes up
-          backEndPlayers[backEndProjectiles[id].playerId].score++;
+          if (backEndPlayers[backEndProjectiles[id].playerId]) {
+            backEndPlayers[backEndProjectiles[id].playerId].score++;
+          }
           delete backEndProjectiles[id];
           delete backEndPlayers[playerId];
           break;
