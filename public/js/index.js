@@ -22,11 +22,7 @@ const frontEndPlayers = {};
 const frontEndProjectiles = {};
 
 socket.on("connect", () => {
-  socket.emit("initCanvas", {
-    width: canvas.width,
-    height: canvas.height,
-    devicePixelRatio,
-  });
+  socket.emit("initCanvas", {});
 });
 
 socket.on("updateProjectiles", (backEndProjectiles) => {
@@ -269,4 +265,14 @@ window.addEventListener("keyup", (e) => {
       keys.d.pressed = false;
       break;
   }
+});
+
+document.querySelector("#usernameForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  socket.emit("initGame", {
+    width: canvas.width,
+    height: canvas.height,
+    devicePixelRatio,
+    username: document.querySelector("#usernameInput").value,
+  });
 });

@@ -23,23 +23,8 @@ const backEndProjectiles = {};
 
 io.on("connect", (socket) => {
   console.log("A new player has connected!");
-  backEndPlayers[socket.id] = {
-    x: 500 * Math.random(),
-    y: 500 * Math.random(),
-    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-    sequenceNumber: 0,
-    score: 0,
-  };
 
   io.emit("updatePlayers", backEndPlayers);
-
-  socket.on("initCanvas", ({ width, height, devicePixelRatio }) => {
-    backEndPlayers[socket.id].canvas = {
-      width,
-      height,
-    };
-    backEndPlayers[socket.id].radius = devicePixelRatio * RADIUS;
-  });
 
   socket.on("shoot", ({ x, y, angle }) => {
     projectileId++;
@@ -78,9 +63,25 @@ io.on("connect", (socket) => {
     }
   });
 
-  socket.on("disconnect", () => {
+  socket.on("initGame", ({ width, height, devicePixelRatio, username }) => {
+    backEndPlayers[socket.id] = {
+      x: 500 * Math.random(),
+      y: 500 * Math.random(),
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      sequenceNumber: 0,
+      score: 0,
+      username,
+    };
+    backEndPlayers[socket.id].canvas = {
+      width,
+      height,
+    };
+    backEndPlayers[socket.id].radius = devicePixelRatio * RADIUS;
+  });
+
+  socket.on("disconnect", (reason) => {
     delete backEndPlayers[socket.id];
-    console.log("A player has disconnected");
+    console.log("Player has disconnected due to:", reason);
   });
 });
 
