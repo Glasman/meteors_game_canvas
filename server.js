@@ -42,7 +42,6 @@ io.on("connect", (socket) => {
       playerId: socket.id,
       radius: 10,
     };
-    console.log(backEndProjectiles);
   });
 
   socket.on("keydown", ({ key, sequenceNumber }) => {
