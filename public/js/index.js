@@ -72,13 +72,13 @@ socket.on("updatePlayers", (backEndPlayers) => {
         "#playerLabels"
         //player id and score of 0 are taken from the backendplayers object
         //and placed on the scoreboard on connection
-      ).innerHTML += `<div data-id="${id}" data-score="${backEndPlayer.score}">${id}: ${backEndPlayer.score}</div>`;
+      ).innerHTML += `<div data-id="${id}" data-score="${backEndPlayer.score}">${backEndPlayer.username}: ${backEndPlayer.score}</div>`;
     } else {
       //checks to see updated score from backend every frame
       //and places updated score on the board
       document.querySelector(
         `div[data-id="${id}"]`
-      ).innerHTML = `${id}: ${backEndPlayer.score}`;
+      ).innerHTML = `${backEndPlayer.username}: ${backEndPlayer.score}`;
 
       //updates that same div by setting data-score attribute equal to player's current score
       document
@@ -200,6 +200,10 @@ const keys = {
 const SPEED = 10;
 let sequenceNumber = 0;
 setInterval(() => {
+ //makes sure eventlisteners waits until player 
+ const player = frontEndPlayers[socket.id];
+ if (!player) return;
+
   if (keys.w.pressed) {
     sequenceNumber++;
     playerInputs.push({ sequenceNumber, vx: 0, vy: -SPEED });

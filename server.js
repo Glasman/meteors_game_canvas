@@ -89,6 +89,7 @@ io.on("connect", (socket) => {
 //their own unique setInterval(), this way gives us just one interval ticker
 //for the whole page
 setInterval(() => {
+ 
   //update projectile position
   for (const id in backEndProjectiles) {
     backEndProjectiles[id].x += backEndProjectiles[id].velocity.x;
