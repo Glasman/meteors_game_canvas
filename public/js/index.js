@@ -14,10 +14,6 @@ const scoreEl = document.querySelector("#scoreEl");
 
 const playerInputs = [];
 
-//I believe these are legacy from when player was in the middle of the screen, to be deleted
-// const x = canvas.width / 2;
-// const y = canvas.height / 2;
-
 const frontEndPlayers = {};
 const frontEndProjectiles = {};
 
@@ -154,6 +150,11 @@ socket.on("updatePlayers", (backEndPlayers) => {
     if (!backEndPlayers[id]) {
       const divToDelete = document.querySelector(`div[data-id="${id}"]`);
       divToDelete.remove();
+      //if the socket matches the player's socket, aka "Our" socket
+      if (id === socket.id) {
+        document.querySelector('#usernameForm').style.display = 'block'
+
+      }
       delete frontEndPlayers[id];
     }
   }
@@ -273,6 +274,7 @@ window.addEventListener("keyup", (e) => {
 
 document.querySelector("#usernameForm").addEventListener("submit", (event) => {
   event.preventDefault();
+  document.querySelector('#usernameForm').style.display = 'none'
   socket.emit("initGame", {
     width: canvas.width,
     height: canvas.height,
